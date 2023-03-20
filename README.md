@@ -9,9 +9,15 @@ they will be addressed.
 
 ## Install
 
-```sh
+pixi-spritesheet-generator is not currently available through npm. This will
+be updated when it is.
+
+If you want to use it before then, you'll need to clone the repo locally, and
+run `npm link` from the repo directory.
+
+<!-- ```sh
 npm install pixi-spritesheet-generator
-```
+``` -->
 
 ## Usage
 
