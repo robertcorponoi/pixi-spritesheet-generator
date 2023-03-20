@@ -1,0 +1,41 @@
+{
+    "name": "pixi-spritesheet-generator",
+    "version": "0.1.0",
+    "description": "Generate a spritesheet with a png and a JSON data file from a set of individual sprites that can be used with PixiJS",
+    "keywords": [
+        "pixijs",
+        "spritesheet"
+    ],
+    "author": "Robert Corponoi",
+    "license": "MIT",
+    "type": "module",
+    "exports": "./dist/index.js",
+    "engines": {
+        "node": ">=14.16"
+    },
+    "bin": {
+        "pixi-spritesheet-generator": "./dist/index.js"
+    },
+    "scripts": {
+        "set-permissions": "chmod +x dist/index.js",
+        "build": "tsc && npm run set-permissions",
+        "build:watch": "concurrently \"tsc --watch\" \"npm run set-permissions\"",
+        "test": "ava"
+    },
+    "devDependencies": {
+        "@types/node": "^18.15.3",
+        "@typescript-eslint/eslint-plugin": "^5.11.0",
+        "@typescript-eslint/parser": "^5.11.0",
+        "concurrently": "^7.0.0",
+        "eslint": "^8.9.0",
+        "prettier": "^2.6.2",
+        "typescript": "^5.0.2"
+    },
+    "dependencies": {
+        "@commander-js/extra-typings": "^10.0.3",
+        "commander": "^10.0.0",
+        "ora": "^6.1.2",
+        "rimraf": "^4.4.0",
+        "shelljs": "^0.8.5"
+    }
+}

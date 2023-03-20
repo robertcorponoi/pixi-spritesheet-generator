@@ -1,0 +1,25 @@
+on: [pull_request]
+
+name: CI
+
+jobs:
+    build-and-test:
+        name: Build and Test
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            # GitHub action for Node.JS.
+            # https://github.com/actions/setup-node
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: "16.13.2"
+                  check-latest: true
+            # Run `npm ci` to install the app's dependencies.
+            - name: Install dependencies
+              run: npm ci
+            # Run the TypeScript build.
+            - name: Compile TypeScript
+              run: npm run build
+            # Run the tests.
+            - name: Test
+              run: npm test
