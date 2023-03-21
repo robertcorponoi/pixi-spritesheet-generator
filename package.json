@@ -19,8 +19,7 @@
     "scripts": {
         "set-permissions": "chmod +x dist/index.js",
         "build": "tsc && npm run set-permissions",
-        "build:watch": "concurrently \"tsc --watch\" \"npm run set-permissions\"",
-        "test": "ava"
+        "build:watch": "concurrently \"tsc --watch\" \"npm run set-permissions\""
     },
     "devDependencies": {
         "@types/node": "^18.15.3",
