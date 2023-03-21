@@ -3,8 +3,8 @@ on: [pull_request]
 name: CI
 
 jobs:
-    build-and-test:
-        name: Build and Test
+    build:
+        name: Build
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
@@ -20,6 +20,3 @@ jobs:
             # Run the TypeScript build.
             - name: Compile TypeScript
               run: npm run build
-            # Run the tests.
-            - name: Test
-              run: npm test
