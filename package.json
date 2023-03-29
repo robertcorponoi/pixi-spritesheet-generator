@@ -8,11 +8,16 @@
     ],
     "author": "Robert Corponoi",
     "license": "MIT",
+    "repository": {
+        "url": "robertcorponoi/pixi-spritesheet-generator"
+    },
     "type": "module",
     "exports": {
         "*": {
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            }
         }
     },
     "engines": {
