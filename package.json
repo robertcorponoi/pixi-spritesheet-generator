@@ -21,6 +21,11 @@
     "bin": {
         "pixi-spritesheet-generator": "./dist/index.js"
     },
+    "files": [
+        "/dist",
+        "README",
+        "LICENSE"
+    ],
     "scripts": {
         "set-permissions": "chmod +x dist/index.js",
         "build": "tsc --declaration && npm run set-permissions",
