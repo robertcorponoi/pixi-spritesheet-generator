@@ -9,17 +9,28 @@
     "author": "Robert Corponoi",
     "license": "MIT",
     "type": "module",
-    "exports": "./dist/index.js",
+    "exports": {
+        "*": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
     "engines": {
         "node": ">=14.16"
     },
     "bin": {
         "pixi-spritesheet-generator": "./dist/index.js"
     },
+    "files": [
+        "/dist",
+        "README",
+        "LICENSE"
+    ],
     "scripts": {
         "set-permissions": "chmod +x dist/index.js",
-        "build": "tsc && npm run set-permissions",
-        "build:watch": "concurrently \"tsc --watch\" \"npm run set-permissions\""
+        "build": "tsc --declaration && npm run set-permissions",
+        "build:watch": "concurrently \"tsc --watch\" \"npm run set-permissions\"",
+        "prepare": "if [ ! -d 'dist' ]; then npm run build; fi"
     },
     "devDependencies": {
         "@types/node": "^18.15.3",
