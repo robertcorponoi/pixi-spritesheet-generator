@@ -1,6 +1,6 @@
 {
     "name": "pixi-spritesheet-generator",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Generate a spritesheet with a png and a JSON data file from a set of individual sprites that can be used with PixiJS",
     "keywords": [
         "pixijs",
@@ -41,7 +41,7 @@
         "@types/node": "^18.15.3",
         "@typescript-eslint/eslint-plugin": "^5.11.0",
         "@typescript-eslint/parser": "^5.11.0",
-        "concurrently": "^7.0.0",
+        "concurrently": "^8.0.1",
         "eslint": "^8.9.0",
         "prettier": "^2.6.2",
         "typescript": "^5.0.2"
