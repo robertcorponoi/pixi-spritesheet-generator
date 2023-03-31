@@ -84,7 +84,7 @@ program
     )
     .option(
         "-d, --declaration",
-        "Indicates whether a types file should be generated or not. These types are union types of the sprites and animations.",
+        "Indicates whether a types file should be generated or not. These types include the values of the spritesheet and separate union types of the sprites and animations.",
         false,
     )
     .action(async (input, options) => {
