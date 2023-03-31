@@ -82,6 +82,11 @@ program
         "The number of columns in the spritesheet. If not provided, the spritesheet will be a single column.",
         "1",
     )
+    .option(
+        "-d, --declaration",
+        "Indicates whether a types file should be generated or not. These types are union types of the sprites and animations.",
+        false,
+    )
     .action(async (input, options) => {
         const spinner = ora({ stream: process.stdout });
 
@@ -287,6 +292,30 @@ program
             JSON.stringify(jsonData, null, 4),
             "utf-8",
         );
+
+        if (options.declaration) {
+            spinner.text = "Creating TypeScript types...";
+
+            const typesData = `\
+    export type Sprite = ${Object.keys(jsonData.frames)
+        .map((frame) => `"${frame}"`)
+        .join(" | ")}
+
+    export type Animation = ${Object.keys(animations)
+        .map((animation) => `"${animation}"`)
+        .join(" | ")};
+
+    export type SpritesheetData = {
+    meta: ${JSON.stringify(jsonData.meta, null, 4)};
+    frames: ${JSON.stringify(jsonData.frames, null, 4)};
+    animations: ${JSON.stringify(animations, null, 4)};
+}`;
+            await fsPromises.writeFile(
+                path.join(options.output, `${name}.d.ts`),
+                typesData,
+                "utf-8",
+            );
+        }
 
         if (options.trim) await rimraf(trimmedSpritesDir);
 
