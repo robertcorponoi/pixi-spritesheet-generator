@@ -63,7 +63,7 @@ type SpriteSheetJSON = {
 };
 
 program
-    .version("0.2.2")
+    .version("0.3.0")
     .description("A CLI to create a spritesheet from a set of sprites.")
     .argument("<input...>", "The sprites to include in the spritesheet.")
     .option("-n, --name <name>", "The name of the generated spritesheet.")
