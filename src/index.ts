@@ -122,7 +122,32 @@ program
         // this is outlined below.
         const animations: { [key: string]: string[] } = {};
 
-        const spritePlacement = input.map((inputFile) => {
+        // If the user wants the sprites trimmed, we create a temporary
+        // directory to store the trimmed sprites.
+        const trimmedSpritesDir = path.join(process.cwd(), `${name}_trimmed`);
+        if (options.trim) {
+            spinner.text = "Trimming sprites...";
+            await fsPromises.mkdir(trimmedSpritesDir);
+
+            // Run the ImageMagick `trim` command to trim the images and save
+            // them to the temporary directory.
+            shell.exec(
+                `magick ${inputFiles} -trim +repage -set filename:base "%[basename]" "${path.join(
+                    trimmedSpritesDir,
+                    "%[filename:base].png",
+                )}"`,
+            );
+        }
+
+        // If the user wants to use the trimmed files we get the list of
+        // files in the temporary directory. Otherwise, we use the input files.
+        const filesToUse = options.trim
+            ? (await fsPromises.readdir(trimmedSpritesDir)).map((file) =>
+                  path.join(trimmedSpritesDir, file),
+              )
+            : input;
+
+        const spritePlacement = filesToUse.map((inputFile) => {
             const spriteNameParsed = path.parse(inputFile);
 
             spinner.text = `Getting sprite position, dimensions, and animations for ${spriteNameParsed.base}...`;
@@ -213,23 +238,6 @@ program
                 height: spriteDimensions.height,
             };
         });
-
-        // If the user wants the sprites trimmed, we create a temporary
-        // directory to store the trimmed sprites.
-        const trimmedSpritesDir = path.join(process.cwd(), `${name}_trimmed`);
-        if (options.trim) {
-            spinner.text = "Trimming sprites...";
-            await fsPromises.mkdir(trimmedSpritesDir);
-
-            // Run the ImageMagick `trim` command to trim the images and save
-            // them to the temporary directory.
-            shell.exec(
-                `magick ${inputFiles} -trim +repage -set filename:base "%[basename]" "${path.join(
-                    trimmedSpritesDir,
-                    "%[filename:base].png",
-                )}"`,
-            );
-        }
 
         // Run the montage command with the options specified to generate the
         // spritesheet html file which we'll use to create the JSON.
