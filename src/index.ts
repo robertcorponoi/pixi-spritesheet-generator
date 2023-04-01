@@ -158,10 +158,12 @@ program
                 xOffset += spriteDimensions.width;
             }
 
+            const spriteNameParsed = path.parse(inputFile);
+
             // Next, we create the `animations` section of the data file.
             // First, we get the name of the sprite without the extension by
             // splitting on common delimiters (hyphens, underscores, and spaces).
-            const spriteNameNoExtension = path.parse(inputFile).name;
+            const spriteNameNoExtension = spriteNameParsed.name;
             const spriteNameSplit = spriteNameNoExtension.split(/(?:-|_| )+/g);
 
             if (spriteNameSplit.length) {
@@ -190,11 +192,13 @@ program
                         // `animations` object, we create one. Otherwise, we
                         // add the sprite to the existing entry.
                         if (!spriteHasAnimationEntry) {
-                            animations[spriteAnimationName] = [inputFile];
+                            animations[spriteAnimationName] = [
+                                spriteNameParsed.base,
+                            ];
                         } else {
                             animations[spriteAnimationName] = [
                                 ...animations[spriteAnimationName],
-                                inputFile,
+                                spriteNameParsed.base,
                             ];
                         }
                     }
@@ -204,7 +208,7 @@ program
             return {
                 x,
                 y,
-                name: inputFile,
+                name: spriteNameParsed.base,
                 width: spriteDimensions.width,
                 height: spriteDimensions.height,
             };
@@ -297,18 +301,18 @@ program
             spinner.text = "Creating TypeScript types...";
 
             const typesData = `\
-    export type Sprite = ${Object.keys(jsonData.frames)
-        .map((frame) => `"${frame}"`)
-        .join(" | ")}
+export type Sprite = ${Object.keys(jsonData.frames)
+                .map((frame) => `"${frame}"`)
+                .join(" | ")}
 
-    export type Animation = ${Object.keys(animations)
-        .map((animation) => `"${animation}"`)
-        .join(" | ")};
+export type Animation = ${Object.keys(animations)
+                .map((animation) => `"${animation}"`)
+                .join(" | ")};
 
-    export type SpritesheetData = {
-    meta: ${JSON.stringify(jsonData.meta, null, 4)};
-    frames: ${JSON.stringify(jsonData.frames, null, 4)};
-    animations: ${JSON.stringify(animations, null, 4)};
+export type SpritesheetData = {
+    meta: ${JSON.stringify(jsonData.meta, null, 8)};
+    frames: ${JSON.stringify(jsonData.frames, null, 8)};
+    animations: ${JSON.stringify(animations, null, 8)};
 }`;
             await fsPromises.writeFile(
                 path.join(options.output, `${name}.d.ts`),
