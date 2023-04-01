@@ -63,7 +63,7 @@ type SpriteSheetJSON = {
 };
 
 program
-    .version("0.2.2")
+    .version("0.3.0")
     .description("A CLI to create a spritesheet from a set of sprites.")
     .argument("<input...>", "The sprites to include in the spritesheet.")
     .option("-n, --name <name>", "The name of the generated spritesheet.")
@@ -122,8 +122,35 @@ program
         // this is outlined below.
         const animations: { [key: string]: string[] } = {};
 
-        const spritePlacement = input.map((inputFile) => {
-            spinner.text = `Getting sprite position, dimensions, and animations for ${inputFile}...`;
+        // If the user wants the sprites trimmed, we create a temporary
+        // directory to store the trimmed sprites.
+        const trimmedSpritesDir = path.join(process.cwd(), `${name}_trimmed`);
+        if (options.trim) {
+            spinner.text = "Trimming sprites...";
+            await fsPromises.mkdir(trimmedSpritesDir);
+
+            // Run the ImageMagick `trim` command to trim the images and save
+            // them to the temporary directory.
+            shell.exec(
+                `magick ${inputFiles} -trim +repage -set filename:base "%[basename]" "${path.join(
+                    trimmedSpritesDir,
+                    "%[filename:base].png",
+                )}"`,
+            );
+        }
+
+        // If the user wants to use the trimmed files we get the list of
+        // files in the temporary directory. Otherwise, we use the input files.
+        const filesToUse = options.trim
+            ? (await fsPromises.readdir(trimmedSpritesDir)).map((file) =>
+                  path.join(trimmedSpritesDir, file),
+              )
+            : input;
+
+        const spritePlacement = filesToUse.map((inputFile) => {
+            const spriteNameParsed = path.parse(inputFile);
+
+            spinner.text = `Getting sprite position, dimensions, and animations for ${spriteNameParsed.name}...`;
             spinner.render();
 
             const spriteDimensions = getImageDimensions(inputFile);
@@ -161,7 +188,7 @@ program
             // Next, we create the `animations` section of the data file.
             // First, we get the name of the sprite without the extension by
             // splitting on common delimiters (hyphens, underscores, and spaces).
-            const spriteNameNoExtension = path.parse(inputFile).name;
+            const spriteNameNoExtension = spriteNameParsed.name;
             const spriteNameSplit = spriteNameNoExtension.split(/(?:-|_| )+/g);
 
             if (spriteNameSplit.length) {
@@ -190,11 +217,13 @@ program
                         // `animations` object, we create one. Otherwise, we
                         // add the sprite to the existing entry.
                         if (!spriteHasAnimationEntry) {
-                            animations[spriteAnimationName] = [inputFile];
+                            animations[spriteAnimationName] = [
+                                spriteNameParsed.name,
+                            ];
                         } else {
                             animations[spriteAnimationName] = [
                                 ...animations[spriteAnimationName],
-                                inputFile,
+                                spriteNameParsed.name,
                             ];
                         }
                     }
@@ -204,28 +233,11 @@ program
             return {
                 x,
                 y,
-                name: inputFile,
+                name: spriteNameParsed.name,
                 width: spriteDimensions.width,
                 height: spriteDimensions.height,
             };
         });
-
-        // If the user wants the sprites trimmed, we create a temporary
-        // directory to store the trimmed sprites.
-        const trimmedSpritesDir = path.join(process.cwd(), `${name}_trimmed`);
-        if (options.trim) {
-            spinner.text = "Trimming sprites...";
-            await fsPromises.mkdir(trimmedSpritesDir);
-
-            // Run the ImageMagick `trim` command to trim the images and save
-            // them to the temporary directory.
-            shell.exec(
-                `magick ${inputFiles} -trim +repage -set filename:base "%[basename]" "${path.join(
-                    trimmedSpritesDir,
-                    "%[filename:base].png",
-                )}"`,
-            );
-        }
 
         // Run the montage command with the options specified to generate the
         // spritesheet html file which we'll use to create the JSON.
@@ -297,18 +309,18 @@ program
             spinner.text = "Creating TypeScript types...";
 
             const typesData = `\
-    export type Sprite = ${Object.keys(jsonData.frames)
-        .map((frame) => `"${frame}"`)
-        .join(" | ")}
+export type Sprite = ${Object.keys(jsonData.frames)
+                .map((frame) => `"${frame}"`)
+                .join(" | ")}
 
-    export type Animation = ${Object.keys(animations)
-        .map((animation) => `"${animation}"`)
-        .join(" | ")};
+export type Animation = ${Object.keys(animations)
+                .map((animation) => `"${animation}"`)
+                .join(" | ")};
 
-    export type SpritesheetData = {
-    meta: ${JSON.stringify(jsonData.meta, null, 4)};
-    frames: ${JSON.stringify(jsonData.frames, null, 4)};
-    animations: ${JSON.stringify(animations, null, 4)};
+export type SpritesheetData = {
+    meta: ${JSON.stringify(jsonData.meta, null, 8)};
+    frames: ${JSON.stringify(jsonData.frames, null, 8)};
+    animations: ${JSON.stringify(animations, null, 8)};
 }`;
             await fsPromises.writeFile(
                 path.join(options.output, `${name}.d.ts`),
