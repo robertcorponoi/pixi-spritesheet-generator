@@ -1,6 +1,6 @@
 {
     "name": "pixi-spritesheet-generator",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Generate a spritesheet with a png and a JSON data file from a set of individual sprites that can be used with PixiJS",
     "keywords": [
         "pixijs",
