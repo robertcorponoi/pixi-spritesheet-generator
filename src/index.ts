@@ -123,7 +123,9 @@ program
         const animations: { [key: string]: string[] } = {};
 
         const spritePlacement = input.map((inputFile) => {
-            spinner.text = `Getting sprite position, dimensions, and animations for ${inputFile}...`;
+            const spriteNameParsed = path.parse(inputFile);
+
+            spinner.text = `Getting sprite position, dimensions, and animations for ${spriteNameParsed.base}...`;
             spinner.render();
 
             const spriteDimensions = getImageDimensions(inputFile);
@@ -157,8 +159,6 @@ program
                 // to the row.
                 xOffset += spriteDimensions.width;
             }
-
-            const spriteNameParsed = path.parse(inputFile);
 
             // Next, we create the `animations` section of the data file.
             // First, we get the name of the sprite without the extension by
