@@ -150,7 +150,7 @@ program
         const spritePlacement = filesToUse.map((inputFile) => {
             const spriteNameParsed = path.parse(inputFile);
 
-            spinner.text = `Getting sprite position, dimensions, and animations for ${spriteNameParsed.base}...`;
+            spinner.text = `Getting sprite position, dimensions, and animations for ${spriteNameParsed.name}...`;
             spinner.render();
 
             const spriteDimensions = getImageDimensions(inputFile);
@@ -218,12 +218,12 @@ program
                         // add the sprite to the existing entry.
                         if (!spriteHasAnimationEntry) {
                             animations[spriteAnimationName] = [
-                                spriteNameParsed.base,
+                                spriteNameParsed.name,
                             ];
                         } else {
                             animations[spriteAnimationName] = [
                                 ...animations[spriteAnimationName],
-                                spriteNameParsed.base,
+                                spriteNameParsed.name,
                             ];
                         }
                     }
@@ -233,7 +233,7 @@ program
             return {
                 x,
                 y,
-                name: spriteNameParsed.base,
+                name: spriteNameParsed.name,
                 width: spriteDimensions.width,
                 height: spriteDimensions.height,
             };
