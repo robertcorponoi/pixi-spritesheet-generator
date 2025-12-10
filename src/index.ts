@@ -101,7 +101,7 @@ program
         // Determines what to pass to the `-tiled` option.
         const spriteCount = input.length;
         const columns = parseInt(options.columns);
-        const tiles = `${options.columns}x${Math.round(spriteCount / columns)}`;
+        const tiles = `${options.columns}x${Math.ceil(spriteCount / columns)}`;
 
         // Keeps track of the position where each sprite should be placed in
         // the `map` function below.
